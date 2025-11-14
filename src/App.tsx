@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.tsx
 
-function App() {
-  const [count, setCount] = useState(0)
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
 
+import { AppLayout } from "./layouts/AppLayout";
+import { PublicLayout } from "./layouts/PublicLayout";
+
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+
+// --- Wrapper Components ---
+
+// Wraps pages that should use the PublicLayout (e.g., Login)
+const PublicRouteWrapper = () => (
+  <PublicLayout>
+    <Outlet />
+  </PublicLayout>
+);
+
+// Wraps pages that should use the AppLayout (e.g., Dashboard)
+const AuthenticatedRouteWrapper = () => (
+  <AppLayout>
+    <Outlet />
+  </AppLayout>
+);
+
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        {/* Route for Login: Uses the Public (Minimal) Layout */}
+        <Route element={<PublicRouteWrapper />}>
+          <Route path="/" element={<LoginPage />} />
+          {/* Note: We use '/' here for the initial login page */}
+        </Route>
 
-export default App
+        {/* Route for Dashboard: Uses the App (Full UI) Layout */}
+        <Route element={<AuthenticatedRouteWrapper />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
